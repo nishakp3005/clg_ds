@@ -187,7 +187,6 @@ void free_linkedlist(Node *head){
     }
 }
 
-
 // reverse a linkedlist - reverse a given linked list
 Node* reverse(Node *head){
     Node* search=head->next->next;
