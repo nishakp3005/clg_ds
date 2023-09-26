@@ -47,35 +47,52 @@ void browserHistoryVisit(BrowserHistory* obj, char * url) {
 
 }
 
-
 // this moves back a number of 'steps' in history 
-// char * browserHistoryBack(BrowserHistory* obj, int steps) {
-  
-// }
+char * browserHistoryBack(BrowserHistory* obj, int steps) {
+    while(steps>0 && obj->current->prev != NULL){
+        obj->current = obj->current->prev;
+        steps--;
+        // printf("\n%d\n", steps);
+    }
+    return obj->current->url;
+}
 
 // this moves forward a number of 'steps' in history 
-// char * browserHistoryForward(BrowserHistory* obj, int steps) {
-  
-// }
+char * browserHistoryForward(BrowserHistory* obj, int steps) {
+    while(steps>0 && obj->current->next != NULL){
+        obj->current = obj->current->next;
+        steps--;
+        // printf("\n%d\n", steps);
+    }
+    return obj->current->url;
+}
 
-// this cleans up the browser history and releases memory
-// void browserHistoryFree(BrowserHistory* obj) {
-    
-// }
+// // this cleans up the browser history and releases memory
+void browserHistoryFree(BrowserHistory* obj) {
+    while(obj->current->prev != NULL){
+        BrowserNode* temp = obj->current;
+        obj->current = obj->current->prev;
+        free(temp->url);
+        free(temp);
+    }
+    free(obj);
+}
 
 int main(){
     char* homepage = "google.com";
-    BrowserHistory* obj = browserHistoryCreate(homepage);
+    BrowserHistory* h1 = browserHistoryCreate(homepage);
+    browserHistoryVisit(h1, "linkedin.com");
+    browserHistoryVisit(h1, "wikipedia.org");
+    browserHistoryVisit(h1, "leetcode.com");
+    browserHistoryVisit(h1, "meet.google.com");
+    printf(browserHistoryBack(h1, 2));
+    printf("\n");
+    printf(h1->current->url);
+    printf("\n");
+    printf(browserHistoryForward(h1, 2));
+    printf("\n");
+    printf(h1->current->url);
+    free(h1);
+    printf("\n");
+    printf(h1->current->url); // garbage value
 }
-
-/**
- * Your BrowserHistory struct will be instantiated and called as such:
- * BrowserHistory* obj = browserHistoryCreate(homepage);
- * browserHistoryVisit(obj, url);
- 
- * char * param_2 = browserHistoryBack(obj, steps);
- 
- * char * param_3 = browserHistoryForward(obj, steps);
- 
- * browserHistoryFree(obj);
-*/
