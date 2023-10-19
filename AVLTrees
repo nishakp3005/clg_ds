@@ -1,0 +1,82 @@
+// Create an AVLNode ADT and complete the following functions:
+// 1. createNode  
+// 2. displayAVLTree 
+// 3. getHeight 
+// 4. rotateRight
+// 5. rotateLeft
+// 6. getBalance
+// 7. delete
+// 8. freeAVLTree
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct AVLNode {
+    char* data;
+    struct AVLNode* left;
+    struct AVLNode* right;
+    int height;
+} AVLNode;
+
+// complete this function
+AVLNode* createNode(char* data){
+	AVLNode* node = (AVLNode*)malloc(sizeof(AVLNode));
+    node->left = NULL;
+    node->right = NULL;
+    node->data = data;
+    node->height = 0;
+}
+
+// Display the in-order traversal of the Tree
+void displayAVLTree(AVLNode* root){
+    if(root == NULL){
+        printf("NULL");
+    }
+    printf("%s", root->data);
+    displayAVLTree(root->left);
+    displayAVLTree(root->right);
+}
+
+int getHeight(AVLNode* node){
+    int height = 0;
+    if (node == NULL)
+        return 0;
+    else {
+        int lDepth = getHeight(node->left);
+        int rDepth = getHeight(node->right);
+    
+        /* use the larger one */
+        if (lDepth > rDepth){
+            printf("%d", lDepth);
+            return (lDepth + 1);
+        }
+        else{
+            printf("%d", rDepth);
+            return (rDepth + 1);
+        }
+    }
+    return height;
+}
+
+// function for performing a right rotate
+AVLNode* rotateRight(AVLNode* node);
+
+// function for performing a left rotate
+AVLNode* rotateLeft(AVLNode* node);
+
+// get balance factor of given node
+int getBalance(AVLNode* node);
+
+// This deletes a node with 'data' into the AVL tree
+// Please ensure that your function covers all 4 possible rotation cases
+void deleteNode(AVLNode** root, char* data);
+
+// This frees the memory used by the AVL tree
+void freeAVLTree(AVLNode* root);
+
+int main(){
+    printf("hello world");
+    return 0;
+}
+
+
