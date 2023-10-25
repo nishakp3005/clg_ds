@@ -18,6 +18,7 @@ AVLNode* createNode(char* data){
     node->right = NULL;
     node->data = data;
     node->height = 1;
+    return node;
 
 }
 
@@ -61,7 +62,7 @@ AVLNode* rotateRight(AVLNode* node){
     node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
     x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
 
-    return node;
+    return x;
 
 }
 
@@ -74,9 +75,10 @@ AVLNode* rotateLeft(AVLNode* node){
     x->left = node;
     node->right = y;
 
-    node->height = max(getHeight(node->left), getHeight(node->right));
-    x->height = max(getHeight(x->left), getHeight(x->right));
+    node->height = 1 + max(getHeight(node->left), getHeight(node->right));
+    x->height = 1 + max(getHeight(x->left), getHeight(x->right));
 
+    return x;
 }
 
 // get balance factor of given node
@@ -123,17 +125,17 @@ void deleteNode(AVLNode** root, char* data){
         // 1 left child
         else if(r->left != NULL && r->right == NULL){
             AVLNode* temp = r->left;
-            *r = *temp;
-            free(temp->data);
-            free(temp);
+            free(r->data);
+            free(r);
+            *root = temp;
         }
 
         // 1 right child
         else if(r->left == NULL && r->right != NULL){
             AVLNode* temp = r->right;
-            *r = *temp;
-            free(temp->data);
-            free(temp);
+            free(r->data);
+            free(r);
+            *root = temp;
         }
 
         // 2 child
