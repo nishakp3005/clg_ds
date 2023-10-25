@@ -25,12 +25,12 @@ AVLNode* createNode(char* data){
 void displayAVLTree(AVLNode* root){
 
     if(root != NULL){
-        printf("%s", root->data);
+        printf("%s ", root->data);
         displayAVLTree(root->left);
         displayAVLTree(root->right);
     }
 
-    else printf("NULL");
+    else printf("NULL ");
 
 }
 
@@ -105,89 +105,81 @@ AVLNode* min(AVLNode* node){
 // This deletes a node with 'data' into the AVL tree
 // Please ensure that your function covers all 4 possible rotation cases
 void deleteNode(AVLNode** root, char* data){
-    
-    AVLNode* r = *root;
+    if (*root == NULL) {
+        return;
+    }
 
-    if(strcmp(data, r->data) < 0) deleteNode(&r->left, data);
+    // Perform a standard BST delete
+    if (strcmp(data, (*root)->data) < 0) {
+        // The node to be deleted is in the left subtree
+        deleteNode(&(*root)->left, data);
+    } else if (strcmp(data, (*root)->data) > 0) {
+        // The node to be deleted is in the right subtree
+        deleteNode(&(*root)->right, data);
+    } else {
+        // Node with the data to be deleted is found
 
-    else if(strcmp(data, r->data) > 0) deleteNode(&r->right, data);
+        // Node with only one child or no child
+        if ((*root)->left == NULL || (*root)->right == NULL) {
+            AVLNode* temp = (*root)->left ? (*root)->left : (*root)->right;
 
-    else{
-
-        // 0 child
-        if(r->left == NULL && r->right == NULL) {
-            AVLNode* temp = r;
-            r = NULL;
+            // No child case
+            if (temp == NULL) {
+                temp = *root;
+                *root = NULL;
+            } else {
+                // One child case
+                **root = *temp;
+            }
             free(temp->data);
             free(temp);
-        }
+        } else {
+            // Node with two children, get the in-order successor (smallest in the right subtree)
+            AVLNode* temp = min((*root)->right);
 
-        // 1 left child
-        else if(r->left != NULL && r->right == NULL){
-            AVLNode* temp = r->left;
-            free(r->data);
-            free(r);
-            *root = temp;
-        }
+            // Copy the in-order successor's data to this node
+            free((*root)->data); // Free the current data
+            (*root)->data = strdup(temp->data);
 
-        // 1 right child
-        else if(r->left == NULL && r->right != NULL){
-            AVLNode* temp = r->right;
-            free(r->data);
-            free(r);
-            *root = temp;
-        }
-
-        // 2 child
-        else{
-            AVLNode* minNode = min(r->right); 
-            r->data = minNode->data;
-            deleteNode(&r->right , minNode->data);
+            // Delete the in-order successor
+            deleteNode(&(*root)->right, temp->data);
         }
     }
 
-    //BALANCING TREE
+    // If the tree had only one node, return
+    if (*root == NULL) {
+        return;
+    }
 
-    if(*root == NULL) return;
-
+    // Update the height of this node
     (*root)->height = 1 + max(getHeight((*root)->left), getHeight((*root)->right));
+
+    // Get the balance factor to check if this node became unbalanced
     int balance = getBalance(*root);
 
-    if (balance > 1) {
+    // Perform rotations to maintain AVL balance
 
+    // Left Heavy
+    if (balance > 1) {
         if (getBalance((*root)->left) >= 0) {
             // Left Left Case
-
             *root = rotateRight(*root);
-
-        } 
-        else {
-
+        } else {
             // Left Right Case
-
             (*root)->left = rotateLeft((*root)->left);
             *root = rotateRight(*root);
-
         }
     }
     // Right Heavy
     else if (balance < -1) {
-
         if (getBalance((*root)->right) <= 0) {
             // Right Right Case
-            
             *root = rotateLeft(*root);
-            
-        } 
-        else {
-
+        } else {
             // Right Left Case
-
             (*root)->right = rotateRight((*root)->right);
             *root = rotateLeft(*root);
-
         }
-
     }
 } 
 
@@ -202,3 +194,86 @@ void freeAVLTree(AVLNode* root){
     free(root);
 
 }
+
+// AVLNode* insert(AVLNode* root, char* data) {
+//     if (root == NULL) {
+//         return createNode(data);
+//     }
+
+//     // Perform standard BST insertion
+//     if (strcmp(data, root->data) < 0) {
+//         root->left = insert(root->left, data);
+//     } else if (strcmp(data, root->data) > 0) {
+//         root->right = insert(root->right, data);
+//     } else {
+//         // Duplicate data is not allowed in AVL, so do nothing
+//         return root;
+//     }
+
+//     // Update the height of this ancestor node
+//     root->height = 1 + max(getHeight(root->left), getHeight(root->right));
+
+//     // Get the balance factor for this ancestor node to check for balance violations
+//     int balance = getBalance(root);
+
+//     // Left Heavy
+//     if (balance > 1) {
+//         if (strcmp(data, root->left->data) < 0) {
+//             // Left Left Case
+//             return rotateRight(root);
+//         } else {
+//             // Left Right Case
+//             root->left = rotateLeft(root->left);
+//             return rotateRight(root);
+//         }
+//     }
+
+//     // Right Heavy
+//     if (balance < -1) {
+//         if (strcmp(data, root->right->data) > 0) {
+//             // Right Right Case
+//             return rotateLeft(root);
+//         } else {
+//             // Right Left Case
+//             root->right = rotateRight(root->right);
+//             return rotateLeft(root);
+//         }
+//     }
+
+//     return root;
+// }
+
+// // Wrapper function for inserting a node into the AVL tree
+// void insertNode(AVLNode** root, char* data) {
+//     *root = insert(*root, data);
+// }
+
+// int main() {
+//     AVLNode* root = NULL;
+
+//     // Insert nodes into the AVL tree
+//     insertNode(&root, "apple");
+//     insertNode(&root, "banana");
+//     insertNode(&root, "cherry");
+//     insertNode(&root, "date");
+//     insertNode(&root, "grape");
+//     insertNode(&root, "kiwi");
+//     insertNode(&root, "mango");
+
+//     printf("AVL Tree after insertions:\n");
+//     displayAVLTree(root);
+//     printf("\n");
+
+//     // Delete a node from the AVL tree
+//     printf("deleting");
+//     deleteNode(&root, "banana");
+//     printf("deletion done");
+//     printf("AVL Tree after deleting 'banana':\n");
+//     displayAVLTree(root);
+//     printf("\n");
+
+//     // Free memory used by the AVL tree
+//     freeAVLTree(root);
+
+//     return 0;
+// }
