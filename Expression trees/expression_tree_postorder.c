@@ -57,14 +57,12 @@ ExprTreeNode *create_ET_from_postfix(char *postfix_expression){
             node->left = pop(stack);
             push(stack, node);
             root = node;
-            printf("%c > \n", node->data.operation);
         }
         else{
             Data num;
             num.operand = postfix_expression[i] - '0';
             ExprTreeNode* node = create_node(OPERAND, num);
             push(stack, node);
-            printf("\n> %f ", node->data.operand);
         }
         i++;
     }
